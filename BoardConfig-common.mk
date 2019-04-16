@@ -42,6 +42,7 @@ BOARD_KERNEL_CMDLINE += service_locator.enable=1
 BOARD_KERNEL_CMDLINE += cgroup.memory=nokmem
 BOARD_KERNEL_CMDLINE += lpm_levels.sleep_disabled=1
 BOARD_KERNEL_CMDLINE += usbcore.autosuspend=7
+BOARD_KERNEL_CMDLINE += loop.max_part=7
 
 BOARD_KERNEL_BASE        := 0x00000000
 BOARD_KERNEL_PAGESIZE    := 4096
@@ -118,7 +119,10 @@ BOARD_FLASH_BLOCK_SIZE := 131072
 # Install odex files into the other system image
 BOARD_USES_SYSTEM_OTHER_ODEX := true
 
-BOARD_ROOT_EXTRA_SYMLINKS := /vendor/lib/dsp:/dsp
+# Generate an APEX image for experiment b/119800099.
+DEXPREOPT_GENERATE_APEX_IMAGE := true
+
+BOARD_ROOT_EXTRA_SYMLINKS := /vendor/dsp:/dsp
 BOARD_ROOT_EXTRA_SYMLINKS += /mnt/vendor/persist:/persist
 
 include device/google/crosshatch-sepolicy/crosshatch-sepolicy.mk
@@ -214,6 +218,17 @@ ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
 DEVICE_MANIFEST_FILE += device/google/crosshatch/manifest_userdebug.xml
 endif
 
+ODM_MANIFEST_SKUS += \
+    G013A \
+    G013B \
+    G013C \
+    G013D \
+
+ODM_MANIFEST_G013A_FILES := device/google/crosshatch/nfc/manifest_se_SIM1.xml
+ODM_MANIFEST_G013B_FILES := device/google/crosshatch/nfc/manifest_se_eSE1.xml
+ODM_MANIFEST_G013C_FILES := device/google/crosshatch/nfc/manifest_se_SIM1.xml
+ODM_MANIFEST_G013D_FILES := device/google/crosshatch/nfc/manifest_se_eSE1.xml
+
 BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
 
 # Use mke2fs to create ext4 images
@@ -241,6 +256,17 @@ BOARD_VENDOR_KERNEL_MODULES += \
 else ifeq (,$(filter-out blueline_kernel_debug_api crosshatch_kernel_debug_api, $(TARGET_PRODUCT)))
 BOARD_VENDOR_KERNEL_MODULES += \
     $(wildcard device/google/crosshatch-kernel/debug_api/*.ko)
+else ifneq (,$(TARGET_PREBUILT_KERNEL))
+    # If TARGET_PREBUILT_KERNEL is set, check whether there are modules packaged with that kernel
+    # image. If so, use them, otherwise fall back to the default directory.
+    TARGET_PREBUILT_KERNEL_PREBUILT_VENDOR_KERNEL_MODULES := \
+        $(wildcard $(dir $(TARGET_PREBUILT_KERNEL))/*.ko)
+    ifneq (,$(TARGET_PREBUILT_KERNEL_PREBUILT_VENDOR_KERNEL_MODULES))
+        BOARD_VENDOR_KERNEL_MODULES += $(TARGET_PREBUILT_KERNEL_PREBUILT_VENDOR_KERNEL_MODULES)
+    else
+        BOARD_VENDOR_KERNEL_MODULES += $(wildcard device/google/crosshatch-kernel/*.ko)
+    endif
+    # Do NOT delete TARGET_PREBUILT..., it will lead to empty BOARD_VENDOR_KERNEL_MODULES.
 else
 BOARD_VENDOR_KERNEL_MODULES += \
     $(wildcard device/google/crosshatch-kernel/*.ko)

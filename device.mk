@@ -15,9 +15,7 @@
 #
 
 PRODUCT_SOONG_NAMESPACES += \
-    device/google/crosshatch/pixelstats \
-    device/google/crosshatch/usb \
-    device/google/crosshatch/health \
+    device/google/crosshatch \
     hardware/google/av \
     hardware/google/interfaces \
     hardware/qcom/sdm845 \
@@ -199,6 +197,7 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.location.gps.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.location.gps.xml \
     frameworks/native/data/etc/android.hardware.telephony.gsm.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.gsm.xml \
     frameworks/native/data/etc/android.hardware.telephony.cdma.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.cdma.xml \
+    frameworks/native/data/etc/android.hardware.telephony.ims.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.telephony.ims.xml \
     frameworks/native/data/etc/android.hardware.touchscreen.multitouch.jazzhand.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.touchscreen.multitouch.jazzhand.xml \
     frameworks/native/data/etc/android.hardware.wifi.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.xml \
     frameworks/native/data/etc/android.hardware.wifi.direct.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.direct.xml \
@@ -365,6 +364,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.vendor.bluetooth.emb_wp_mode=false \
     ro.vendor.bluetooth.wipower=false
 
+# HEH filename encryption is being dropped
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.crypto.volume.filenames_mode=aes-256-cts
+
 # DRM HAL
 PRODUCT_PACKAGES += \
     android.hardware.drm@1.0-impl \
@@ -378,21 +381,22 @@ PRODUCT_PACKAGES += \
     Tag \
     SecureElement \
     android.hardware.nfc@1.1-service \
-    android.hardware.secure_element@1.0-service-disabled
+    android.hardware.secure_element@1.1-service-disabled
 
 PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
     vendor.ese.loader_script_path=/sys/firmware/devicetree/base/soc/i2c@88c000/nq@28/ese/loader_scripts_path
 
 PRODUCT_COPY_FILES += \
-    device/google/crosshatch/nfc/libnfc-nci.conf:$(TARGET_COPY_OUT_SYSTEM)/etc/libnfc-nci.conf \
-    device/google/crosshatch/nfc/libese-nxp.conf:$(TARGET_COPY_OUT_VENDOR)/etc/libese-nxp.conf
+    frameworks/native/data/etc/android.hardware.nfc.uicc.xml:$(TARGET_COPY_OUT_VENDOR)/odm/etc/permissions/sku_G013A/android.hardware.nfc.uicc.xml \
+    frameworks/native/data/etc/android.hardware.nfc.ese.xml:$(TARGET_COPY_OUT_VENDOR)/odm/etc/permissions/sku_G013B/android.hardware.nfc.ese.xml \
+    frameworks/native/data/etc/android.hardware.nfc.uicc.xml:$(TARGET_COPY_OUT_VENDOR)/odm/etc/permissions/sku_G013C/android.hardware.nfc.uicc.xml \
+    frameworks/native/data/etc/android.hardware.nfc.ese.xml:$(TARGET_COPY_OUT_VENDOR)/odm/etc/permissions/sku_G013D/android.hardware.nfc.ese.xml
 
-# TODO(b/72443662)
 PRODUCT_COPY_FILES += \
-    device/google/crosshatch/nfc/manifest_se_SIM1.xml:$(TARGET_COPY_OUT_VENDOR)/odm/etc/vintf/manifest_G013A.xml \
-    device/google/crosshatch/nfc/manifest_se_eSE1.xml:$(TARGET_COPY_OUT_VENDOR)/odm/etc/vintf/manifest_G013B.xml \
-    device/google/crosshatch/nfc/manifest_se_SIM1.xml:$(TARGET_COPY_OUT_VENDOR)/odm/etc/vintf/manifest_G013C.xml \
-    device/google/crosshatch/nfc/manifest_se_eSE1.xml:$(TARGET_COPY_OUT_VENDOR)/odm/etc/vintf/manifest_G013D.xml
+    device/google/crosshatch/nfc/libnfc-nci.conf:$(TARGET_COPY_OUT_PRODUCT)/etc/libnfc-nci.conf \
+    device/google/crosshatch/nfc/libese-nxp.conf:$(TARGET_COPY_OUT_VENDOR)/etc/libese-nxp.conf \
+    device/google/crosshatch/felica/loaderservice_updater_1.lss:$(TARGET_COPY_OUT_VENDOR)/etc/loaderservice_updater_1.lss \
+    device/google/crosshatch/felica/loaderservice_updater_2.lss:$(TARGET_COPY_OUT_VENDOR)/etc/loaderservice_updater_2.lss
 
 PRODUCT_PACKAGES += \
     android.hardware.usb@1.1-service.crosshatch
@@ -541,7 +545,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/audio_policy_configuration_a2dp_offload_disabled.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration_a2dp_offload_disabled.xml \
     $(LOCAL_PATH)/audio_policy_configuration_bluetooth_hal_enabled.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration_bluetooth_hal_enabled.xml \
     $(LOCAL_PATH)/a2dp_in_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_in_audio_policy_configuration.xml \
-    $(LOCAL_PATH)/bluetooth_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/bluetooth_audio_policy_configuration.xml \
+    $(LOCAL_PATH)/bluetooth_hearing_aid_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/bluetooth_hearing_aid_audio_policy_configuration.xml \
     $(LOCAL_PATH)/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml \
     frameworks/av/services/audiopolicy/config/a2dp_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/usb_audio_policy_configuration.xml \
@@ -784,4 +788,4 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 
 # Increment the SVN for any official public releases
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.vendor.build.svn=4
+    ro.vendor.build.svn=7
