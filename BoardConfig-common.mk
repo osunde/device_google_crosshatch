@@ -70,6 +70,16 @@ BOARD_USES_RECOVERY_AS_BOOT := true
 BOARD_BUILD_SYSTEM_ROOT_IMAGE := true
 BOARD_USES_METADATA_PARTITION := true
 
+# Board uses A/B OTA.
+AB_OTA_UPDATER := true
+
+AB_OTA_PARTITIONS += \
+    boot \
+    system \
+    vbmeta \
+    dtbo \
+    product
+
 # Partitions (listed in the file) to be wiped under recovery.
 TARGET_RECOVERY_WIPE := device/google/crosshatch/recovery.wipe
 TARGET_RECOVERY_FSTAB := device/google/crosshatch/fstab.hardware
@@ -215,7 +225,8 @@ DEVICE_FRAMEWORK_MANIFEST_FILE := device/google/crosshatch/framework_manifest.xm
 
 # Userdebug only Vendor Interface Manifest
 ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
-DEVICE_MANIFEST_FILE += device/google/crosshatch/manifest_userdebug.xml
+DEVICE_FRAMEWORK_MANIFEST_FILE += device/google/crosshatch/framework_manifest_userdebug.xml
+DEVICE_MATRIX_FILE += device/google/crosshatch/compatibility_matrix_userdebug.xml
 endif
 
 ODM_MANIFEST_SKUS += \
