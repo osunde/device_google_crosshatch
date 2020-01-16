@@ -199,9 +199,9 @@ include device/google/crosshatch-sepolicy/crosshatch-sepolicy.mk
 TARGET_FS_CONFIG_GEN := device/google/crosshatch/config.fs
 
 QCOM_BOARD_PLATFORMS += sdm845
-BOARD_HAVE_BLUETOOTH_QCOM := true
+BOARD_HAVE_BLUETOOTH_QCOM := false
 BOARD_HAVE_QCOM_FM := false
-BOARD_USES_COMMON_BLUETOOTH_HAL := true
+BOARD_USES_COMMON_BLUETOOTH_HAL := false
 
 # Camera
 TARGET_USES_AOSP := true
